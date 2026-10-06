@@ -1,0 +1,45 @@
+name: Build libpeconv
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86, x64]
+        build_type: [Release]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ github.workspace }}/build_${{ matrix.arch }}
+          -A ${{ matrix.arch == 'x86' && 'Win32' || 'x64' }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build libpeconv
+        run: >
+          cmake --build ${{ github.workspace }}/build_${{ matrix.arch }}
+          --config ${{ matrix.build_type }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: libpeconv-${{ matrix.arch }}-${{ matrix.build_type }}
+          path: |
+            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*
+            ${{ github.workspace }}/build_${{ matrix.arch }}/**/*.lib
+            ${{ github.workspace }}/build_${{ matrix.arch }}/**/*.dll
+            ${{ github.workspace }}/build_${{ matrix.arch }}/**/*.exe
