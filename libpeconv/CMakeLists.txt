@@ -91,7 +91,7 @@ set (hdrs
 
 add_library ( ${PROJECT_NAME} STATIC ${hdrs} ${srcs} )
 
-add_library(peconv_dll SHARED dll_export.cpp)
+add_library(peconv_dll SHARED src/dll_export.cpp)
 target_link_libraries(peconv_dll PRIVATE libpeconv)
 
 if(DEFINED _LOG_LEVEL_${PECONV_LOG_VERBOSITY})
