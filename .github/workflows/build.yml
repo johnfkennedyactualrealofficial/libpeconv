@@ -1,4 +1,4 @@
-name: Build libpeconv
+name: Build libpeconv DLL
 
 on:
   push:
@@ -28,6 +28,7 @@ jobs:
           cmake -B ${{ github.workspace }}/build_${{ matrix.arch }}
           -A ${{ matrix.arch == 'x86' && 'Win32' || 'x64' }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DBUILD_SHARED_LIBS=ON
 
       - name: Build libpeconv
         run: >
@@ -37,9 +38,8 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: libpeconv-${{ matrix.arch }}-${{ matrix.build_type }}
+          name: libpeconv-dll-${{ matrix.arch }}-${{ matrix.build_type }}
           path: |
-            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*
-            ${{ github.workspace }}/build_${{ matrix.arch }}/**/*.lib
-            ${{ github.workspace }}/build_${{ matrix.arch }}/**/*.dll
-            ${{ github.workspace }}/build_${{ matrix.arch }}/**/*.exe
+            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*.dll
+            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*.lib
+            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*.exe
