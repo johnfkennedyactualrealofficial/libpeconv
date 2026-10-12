@@ -29,17 +29,20 @@ jobs:
           -A ${{ matrix.arch == 'x86' && 'Win32' || 'x64' }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DBUILD_SHARED_LIBS=ON
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install_${{ matrix.arch }}
 
       - name: Build libpeconv
         run: >
           cmake --build ${{ github.workspace }}/build_${{ matrix.arch }}
           --config ${{ matrix.build_type }}
 
+      - name: Install to Package Directory
+        run: >
+          cmake --install ${{ github.workspace }}/build_${{ matrix.arch }}
+          --config ${{ matrix.build_type }}
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: libpeconv-dll-${{ matrix.arch }}-${{ matrix.build_type }}
-          path: |
-            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*.dll
-            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*.lib
-            ${{ github.workspace }}/build_${{ matrix.arch }}/${{ matrix.build_type }}/*.exe
+          path: ${{ github.workspace }}/install_${{ matrix.arch }}/**/*
